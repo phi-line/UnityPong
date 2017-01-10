@@ -2,27 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour {
+	public static GameManager instance = null;
 
 	public Text leftText, rightText;
-	private int lScore, rScore;
-	public GoalScript leftGoal, rightGoal;
 	public GameObject leftPaddle, rightPaddle;
 
-	// Use this for initialization
-	void Start () {
-		
+	public int lScore, rScore;
+
+	void Awake() {
+		if (instance == null)
+			instance = this;
+		else if (instance != this)
+			Destroy(gameObject);
+		DontDestroyOnLoad(gameObject);
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		if (leftGoal.score > lScore){
-			lScore = leftGoal.score;
+
+	}
+
+	public void GoalScored(Collision col, int score){
+		if (col.transform.position.x > 0){
+			Debug.Log("Left goal scored upon!");
+			lScore = score;
+			leftText.text = lScore.ToString();
+			StartCoroutine(col.gameObject.GetComponent<BounceBall>().Reset(Vector3.left));
 		}
-		if (rightGoal.score < rScore){
-			rScore = rightGoal.score;
+		else {
+			Debug.Log("Right goal scored upon!");
+			rScore = score;
+			rightText.text = rScore.ToString();
+			StartCoroutine(col.gameObject.GetComponent<BounceBall>().Reset(Vector3.right));
 		}
 	}
 }

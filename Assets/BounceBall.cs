@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
-using System.Xml.Linq;
 
 public class BounceBall : MonoBehaviour {
 
@@ -69,10 +68,16 @@ public class BounceBall : MonoBehaviour {
 		return dir;
 	}
 
-	public IEnumerator Reset(){
+	public IEnumerator Reset(Vector3 dir){
 		direction = cardinal = curPos = lastPos = Vector3.zero;
 		this.transform.position = Vector3.forward * 5f;
 		yield return new WaitForSeconds(timeToRespawn);
 		this.transform.position = Vector3.zero;
+		yield return new WaitForSeconds(timeToRespawn);
+		SetDir(dir);
+	}
+
+	public void SetDir(Vector3 dir){
+		direction = dir;
 	}
 }
