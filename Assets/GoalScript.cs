@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class GoalScript : MonoBehaviour {
 
-	public int score;
 	GameManager gm;
 
-	void Awake () {
+	void Start () {
 		gm = GameManager.instance;
 	}
 
 	void OnCollisionEnter(Collision col){
 		if (col.gameObject.tag == "Ball"){
-			score++;
-			gm.GoalScored(col, score);
+			if (gm != null)
+				gm.GoalScored(col);
 		}
 	}
 }

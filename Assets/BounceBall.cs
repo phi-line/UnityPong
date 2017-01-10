@@ -68,7 +68,7 @@ public class BounceBall : MonoBehaviour {
 		return dir;
 	}
 
-	public IEnumerator Reset(Vector3 dir){
+	public IEnumerator ResetBall(Vector3 dir){
 		direction = cardinal = curPos = lastPos = Vector3.zero;
 		this.transform.position = Vector3.forward * 5f;
 		yield return new WaitForSeconds(timeToRespawn);
