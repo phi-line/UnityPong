@@ -5,6 +5,8 @@ using UnityEditor;
 
 public class MovePaddle : MonoBehaviour {
 
+	public bool haltMovement;
+
 	//KeyCodes are enums that point to keyboard buttons (eg: KeyCode.Space)
 	public KeyCode upKey = KeyCode.W;
 	public KeyCode downKey = KeyCode.S;
@@ -34,7 +36,7 @@ public class MovePaddle : MonoBehaviour {
 		float minHeight = GetComponent<Renderer>().bounds.min.y;
 		float maxHeight = GetComponent<Renderer>().bounds.max.y;
 
-		if (upPressed && !downPressed){
+		if (upPressed && !downPressed && !haltMovement){
 			//we set current key so that if both are pressed we have a fallback
 			currentKey = upKey;
 
@@ -45,7 +47,7 @@ public class MovePaddle : MonoBehaviour {
 			unitVector = Vector3.up;
 		}
 
-		if (downPressed && !upPressed){
+		if (downPressed && !upPressed && !haltMovement){
 			currentKey = downKey;
 			if (minHeight >= -yBounds)
 				MoveDown();
@@ -55,7 +57,7 @@ public class MovePaddle : MonoBehaviour {
 		}
 
 		//if both are pressed then we rely on the key that was pressed first
-		if (upPressed && downPressed){
+		if (upPressed && downPressed && !haltMovement){
 			if (currentKey == upKey && maxHeight <= yBounds){
 				MoveUp();
 			}

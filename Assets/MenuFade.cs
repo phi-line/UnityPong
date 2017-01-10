@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameOverFade : MonoBehaviour {
+public class MenuFade : MonoBehaviour {
 
 	public Text winText;
 	public Text instructionText;
@@ -16,10 +16,11 @@ public class GameOverFade : MonoBehaviour {
 
 	public Color fade = Color.white;
 
-	public IEnumerator Blur(string text){
+	public IEnumerator Blur(string top, string bottom){
 		//Debug.Log("blur started");
 		ResetDefaults();
-		winText.text = text;
+		winText.text = top;
+		instructionText.text = bottom;
 		float maxD = maxDistortion;
 		float maxS = maxSize;
 		for (int i = 0; i < timeSteps; ++i){

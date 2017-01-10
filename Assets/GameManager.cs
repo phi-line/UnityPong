@@ -9,15 +9,18 @@ public class GameManager : MonoBehaviour {
 
 	public Text leftText, rightText;
 	public GameObject leftPaddle, rightPaddle;
-	public GameOverFade gameOverFade;
+	public MenuFade menuFade;
 	public GameObject ps;
 	private GameObject ips;
 
 	public int maxScore = 7;
 	private int lScore, rScore;
+	private string logoMessage = "PONG";
 	private string winMessage = " side wins!";
+	private string instructionMessage = "Press SPACE to Start";
 
 	private bool gameOver;
+	private bool gameStart;
 
 	void Awake() {
 		if (instance == null)
@@ -27,12 +30,25 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 	}
 
+	void Start() {
+		if (!gameStart){
+			DisplayMessage(logoMessage, instructionMessage);
+			FreezePaddle(true);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
+		if (!gameStart && Input.GetKeyDown(KeyCode.Space)){
+			gameStart = false;
+			menuFade.ResetDefaults();
+			menuFade.gameObject.SetActive(false);
+			ResetGame();
+		}
 		if (gameOver && Input.GetKeyDown(KeyCode.Space)){
 			gameOver = false;
-			gameOverFade.ResetDefaults();
-			gameOverFade.gameObject.SetActive(false);
+			menuFade.ResetDefaults();
+			menuFade.gameObject.SetActive(false);
 			ResetGame();
 		}
 		if (ips) {
@@ -50,7 +66,7 @@ public class GameManager : MonoBehaviour {
 			leftText.text = lScore.ToString();
 			if (lScore >= maxScore){
 				Debug.Log("Left win!"); 
-				TriggerWin("Left");
+				DisplayMessage("Left" + winMessage, instructionMessage);
 				StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.zero));
 				return;
 			}
@@ -62,7 +78,7 @@ public class GameManager : MonoBehaviour {
 			rightText.text = rScore.ToString();
 			if (rScore >= maxScore){
 				Debug.Log("Right win!"); 
-				TriggerWin("Right");
+				DisplayMessage("Right" + winMessage, instructionMessage);
 				StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.zero));
 				return;
 			}
@@ -70,19 +86,24 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	private void TriggerWin(string winner){
-		winner += winMessage;
+	private void DisplayMessage(string winner, string message){
 		gameOver = true;
-		gameOverFade.gameObject.SetActive(true);
-		StartCoroutine(gameOverFade.Blur(winner));
+		menuFade.gameObject.SetActive(true);
+		StartCoroutine(menuFade.Blur(winner, message));
 	}
 
 	private void ResetGame(){
 		lScore = rScore = 0;
 		leftText.text = rightText.text = 0.ToString();
+		FreezePaddle(false);
 		if (UnityEngine.Random.insideUnitCircle.x < 0)
 			StartCoroutine(FindObjectOfType<BounceBall>().ResetBall(Vector3.left));
 		else
 			StartCoroutine(FindObjectOfType<BounceBall>().ResetBall(Vector3.right));
+	}
+
+	private void FreezePaddle(bool freeze){
+		leftPaddle.GetComponent<MovePaddle>().haltMovement = freeze;
+		rightPaddle.GetComponent<MovePaddle>().haltMovement = freeze;
 	}
 }
