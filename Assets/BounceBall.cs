@@ -10,12 +10,12 @@ public class BounceBall : MonoBehaviour {
 	public bool debugBounce;
 
 	public float speedMult = 3f;
-	public float randM = 10f;
-	public float velocityMult = 5f;
+	public float randAngle = 10f;
 
-	Vector3 direction;
-	public Vector3 cardinal;
+	Vector3 direction, cardinal;
 	Vector3 curPos, lastPos;
+
+	float timeToRespawn = 1f;
 
 	// Use this for initialization
 	void Start () {
@@ -53,7 +53,7 @@ public class BounceBall : MonoBehaviour {
 		if (col.gameObject.tag == "Paddle"){
 			direction = ReflectBall(direction, col.contacts[0].normal);
 			MovePaddle mp = col.gameObject.GetComponent<MovePaddle>();
-			Vector3 paddleVelocity = mp.getUnitVector() * velocityMult;
+			Vector3 paddleVelocity = mp.getUnitVector();
 			direction = (direction*0.8f) + (paddleVelocity*0.2f);
 		}
 	}
@@ -64,8 +64,15 @@ public class BounceBall : MonoBehaviour {
 		dir = Vector3.Reflect(direction, normal);
 
 		//We want to give our ball a little variety in movement
-		//so, lets multiply our direction with a random z angle
-		dir = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, randM*cardinal.x)) * dir;
+		//so, lets multiply our direction with a random z angle in the current direction
+		dir = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-randAngle, randAngle)) * dir;
 		return dir;
+	}
+
+	public IEnumerator Reset(){
+		direction = cardinal = curPos = lastPos = Vector3.zero;
+		this.transform.position = Vector3.forward * 5f;
+		yield return new WaitForSeconds(timeToRespawn);
+		this.transform.position = Vector3.zero;
 	}
 }
