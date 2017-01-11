@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class BounceBall : MonoBehaviour {
 
 	public bool debugBounce;
+	public bool useOriginalBounce = true;
 	public float speedMult = 3f;
 	public float randAngle = 10f;
 	public Vector3 direction, cardinal;
@@ -50,10 +51,21 @@ public class BounceBall : MonoBehaviour {
 		}
 
 		if (col.gameObject.tag == "Paddle"){
-			direction = ReflectBall(direction, col.contacts[0].normal);
-			MovePaddle mp = col.gameObject.GetComponent<MovePaddle>();
-			Vector3 paddleVelocity = mp.getUnitVector();
-			direction = (direction*0.8f) + (paddleVelocity*0.2f);
+			//this is my custom bounce algorithm that takes into account the paddle's velocity
+			if (!useOriginalBounce){
+				direction = ReflectBall(direction, col.contacts[0].normal);
+				MovePaddle mp = col.gameObject.GetComponent<MovePaddle>();
+				Vector3 paddleVelocity = mp.getUnitVector();
+				direction = (direction*0.8f) + (paddleVelocity*0.2f);
+			} 
+			//the original pong method of paddle bounce which takes the location of the hit on the paddle
+			else {
+				float hitAxis = col.contacts[0].point.y;
+				float middleAxis = col.gameObject.transform.position.y;
+				float difference;
+				difference = Mathf.Abs(hitAxis) - middleAxis;
+				direction = Quaternion.Euler(0, 0, 360/difference) * col.contacts[0].normal;
+			}
 		}
 
 		sm.PlayRand(bounceClip);
