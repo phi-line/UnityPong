@@ -24,8 +24,7 @@ public class PaddleAI : MonoBehaviour {
 			playerTag.text = AI;
 		else playerTag.text = player;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		if (useAI && this.GetComponent<MovePaddle>().haltInput == false){
 			this.GetComponent<MovePaddle>().haltInput = true;
