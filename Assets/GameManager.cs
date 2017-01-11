@@ -22,6 +22,10 @@ public class GameManager : MonoBehaviour {
 	private bool gameOver;
 	private bool gameStart;
 
+	SoundManager sm;
+	public AudioClip deathClip;
+	public AudioClip winClip;
+
 	void Awake() {
 		if (instance == null)
 			instance = this;
@@ -31,6 +35,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start() {
+		sm = SoundManager.instance;
 		if (!gameStart){
 			DisplayMessage(logoMessage, instructionMessage);
 			FreezePaddle(true);
@@ -60,14 +65,16 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void GoalScored(Collision col){
+		sm.PlayRand(deathClip);
 		if (col.transform.position.x > 0){
 			ips = (GameObject) Instantiate(ps, col.transform.position, Quaternion.Euler(Vector3.up));
 			lScore++;
 			leftText.text = lScore.ToString();
 			if (lScore >= maxScore){
-				Debug.Log("Left win!"); 
+				Debug.Log("Left win!");
 				DisplayMessage("Left" + winMessage, instructionMessage);
 				StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.zero));
+				sm.PlayRand(winClip);
 				return;
 			}
 			StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.left));
@@ -80,6 +87,7 @@ public class GameManager : MonoBehaviour {
 				Debug.Log("Right win!"); 
 				DisplayMessage("Right" + winMessage, instructionMessage);
 				StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.zero));
+				sm.PlayRand(winClip);
 				return;
 			}
 			StartCoroutine(col.gameObject.GetComponent<BounceBall>().ResetBall(Vector3.right));

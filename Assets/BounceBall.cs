@@ -7,25 +7,25 @@ using UnityEngine.UI;
 public class BounceBall : MonoBehaviour {
 
 	public bool debugBounce;
-
 	public float speedMult = 3f;
 	public float randAngle = 10f;
-
 	public Vector3 direction, cardinal;
-	Vector3 curPos, lastPos;
 
+	Vector3 curPos, lastPos;
 	float timeToRespawn = 1f;
 
-	// Use this for initialization
+	SoundManager sm;
+	public AudioClip bounceClip;
+
 	void Start () {
+		sm = SoundManager.instance;
 		//for testing we can start the ball off in a random direction
 		if (debugBounce){
 			direction = Vector3.left;
 		}
 		lastPos = Vector3.zero;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		curPos = this.transform.position;
 		if (curPos.x < lastPos.x)
@@ -55,6 +55,8 @@ public class BounceBall : MonoBehaviour {
 			Vector3 paddleVelocity = mp.getUnitVector();
 			direction = (direction*0.8f) + (paddleVelocity*0.2f);
 		}
+
+		sm.PlayRand(bounceClip);
 	}
 
 	Vector3 ReflectBall(Vector3 dir, Vector3 normal){
