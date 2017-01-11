@@ -5,7 +5,7 @@ using UnityEditor;
 
 public class MovePaddle : MonoBehaviour {
 
-	public bool haltMovement;
+	public bool haltInput;
 
 	//KeyCodes are enums that point to keyboard buttons (eg: KeyCode.Space)
 	public KeyCode upKey = KeyCode.W;
@@ -13,17 +13,13 @@ public class MovePaddle : MonoBehaviour {
 
 	KeyCode currentKey;
 	bool upPressed, downPressed;
+	float minHeight, maxHeight;
 
 	//upper and lower bounds of the play area
 	public float yBounds = 4f;
 	public float speedMult;
 
 	Vector3 unitVector = Vector3.zero;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -33,31 +29,26 @@ public class MovePaddle : MonoBehaviour {
 
 		//gets the max vertice in world space of the 3d model. 
 		//This is dynamic so we can adjust paddle size without affecting our logic
-		float minHeight = GetComponent<Renderer>().bounds.min.y;
-		float maxHeight = GetComponent<Renderer>().bounds.max.y;
+		minHeight = GetComponent<Renderer>().bounds.min.y;
+		maxHeight = GetComponent<Renderer>().bounds.max.y;
 
-		if (upPressed && !downPressed && !haltMovement){
+		if (upPressed && !downPressed && !haltInput){
 			//we set current key so that if both are pressed we have a fallback
 			currentKey = upKey;
-
-			//check to see if paddle is within maximum upper bounds
-			if (maxHeight <= yBounds)
-				MoveUp();
-
+			MoveUp();
 			unitVector = Vector3.up;
 		}
 
-		if (downPressed && !upPressed && !haltMovement){
+		if (downPressed && !upPressed && !haltInput){
 			currentKey = downKey;
-			if (minHeight >= -yBounds)
-				MoveDown();
+			MoveDown();
 
 			//we set the unit vector here so that on ball reflection later we can get the avg vector
 			unitVector = Vector3.down;
 		}
 
 		//if both are pressed then we rely on the key that was pressed first
-		if (upPressed && downPressed && !haltMovement){
+		if (upPressed && downPressed && !haltInput){
 			if (currentKey == upKey && maxHeight <= yBounds){
 				MoveUp();
 			}
@@ -67,17 +58,22 @@ public class MovePaddle : MonoBehaviour {
 		}
 	}
 
-	void MoveUp (){
-		//translate in the up direction with our speed var in the fraction of time for this given frame
-		Vector3 translation = Vector3.up * speedMult * Time.deltaTime;
+	public void MoveUp (){
+		//check to see if paddle is within maximum upper bounds
+		if (maxHeight <= yBounds) {
+			//translate in the up direction with our speed var in the fraction of time for this given frame
+			Vector3 translation = Vector3.up * speedMult * Time.deltaTime;
 
-		//lastly, Translate our object in world space (x,y,z)
-		this.transform.Translate(translation, Space.World);
+			//lastly, Translate our object in world space (x,y,z)
+			this.transform.Translate(translation, Space.World);
+		}
 	}
 
-	void MoveDown (){
-		Vector3 translation = Vector3.down * speedMult * Time.deltaTime;
-		this.transform.Translate(translation, Space.World);
+	public void MoveDown (){
+		if (minHeight >= -yBounds) {
+			Vector3 translation = Vector3.down * speedMult * Time.deltaTime;
+			this.transform.Translate(translation, Space.World);
+		}
 	}
 
 	public Vector3 getUnitVector(){

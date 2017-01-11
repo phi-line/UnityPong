@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void FreezePaddle(bool freeze){
-		leftPaddle.GetComponent<MovePaddle>().haltMovement = freeze;
-		rightPaddle.GetComponent<MovePaddle>().haltMovement = freeze;
+		leftPaddle.GetComponent<MovePaddle>().haltInput = freeze;
+		rightPaddle.GetComponent<MovePaddle>().haltInput = freeze;
 	}
 }

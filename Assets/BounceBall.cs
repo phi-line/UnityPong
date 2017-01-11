@@ -11,7 +11,7 @@ public class BounceBall : MonoBehaviour {
 	public float speedMult = 3f;
 	public float randAngle = 10f;
 
-	Vector3 direction, cardinal;
+	public Vector3 direction, cardinal;
 	Vector3 curPos, lastPos;
 
 	float timeToRespawn = 1f;
@@ -79,5 +79,9 @@ public class BounceBall : MonoBehaviour {
 
 	public void SetDir(Vector3 dir){
 		direction = dir;
+	}
+
+	public Vector3 GetDir(){
+		return GetDir();
 	}
 }
