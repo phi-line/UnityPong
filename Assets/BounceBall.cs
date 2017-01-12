@@ -10,6 +10,7 @@ public class BounceBall : MonoBehaviour {
 	public bool useOriginalBounce = true;
 	public float speedMult = 3f;
 	public float randAngle = 10f;
+	public float diffMult = 45f;
 	public Vector3 direction, cardinal;
 
 	Vector3 curPos, lastPos;
@@ -60,11 +61,12 @@ public class BounceBall : MonoBehaviour {
 			} 
 			//the original pong method of paddle bounce which takes the location of the hit on the paddle
 			else {
-				float hitAxis = col.contacts[0].point.y;
+				float hitAxis = col.collider.transform.position.y;
 				float middleAxis = col.gameObject.transform.position.y;
-				float difference;
-				difference = Mathf.Abs(hitAxis) - middleAxis;
-				direction = Quaternion.Euler(0, 0, 360/difference) * col.contacts[0].normal;
+				float diff = Mathf.Clamp01(Mathf.Abs(hitAxis) - middleAxis);
+				if (hitAxis < middleAxis) diff *= -1;
+				Debug.Log("Diff: " + diff + " | Angle: " + diff * diffMult);
+				direction = Quaternion.Euler(0, 0, diff * diffMult) * col.contacts[0].normal;
 			}
 		}
 

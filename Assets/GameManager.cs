@@ -13,17 +13,19 @@ public class GameManager : MonoBehaviour {
 	private GameObject ips;
 
 	public int maxScore = 7;
+	public bool changePaddleSize = true;
 	private int lScore, rScore;
 	private string logoMessage = "PONG";
 	private string winMessage = " side wins!";
 	private string instructionMessage = "Press SPACE to Start";
 
-	private bool gameOver;
-	private bool gameStart;
+	private bool gameOver, gameStart;
 
 	SoundManager sm;
 	public AudioClip deathClip;
 	public AudioClip winClip;
+
+	private Vector3 originalPaddleScale;
 
 	void Awake() {
 		if (instance == null)
@@ -39,12 +41,13 @@ public class GameManager : MonoBehaviour {
 			DisplayMessage(logoMessage, instructionMessage);
 			FreezePaddle(true);
 		}
+		originalPaddleScale = leftPaddle.transform.localScale;
 	}
 
 	// Update is called once per frame
 	void Update () {
 		if (!gameStart && Input.GetKeyDown(KeyCode.Space)){
-			gameStart = false;
+			gameStart = true;
 			menuFade.ResetDefaults();
 			menuFade.gameObject.SetActive(false);
 			ResetGame();
@@ -69,6 +72,7 @@ public class GameManager : MonoBehaviour {
 			ips = (GameObject) Instantiate(ps, col.transform.position, Quaternion.Euler(Vector3.up));
 			lScore++;
 			leftText.text = lScore.ToString();
+			ShrinkPaddle(leftPaddle);
 			if (lScore >= maxScore){
 				Debug.Log("Left win!");
 				DisplayMessage("Left" + winMessage, instructionMessage);
@@ -82,6 +86,7 @@ public class GameManager : MonoBehaviour {
 			ips = (GameObject) Instantiate(ps, col.transform.position, Quaternion.Euler(Vector3.up));
 			rScore++;
 			rightText.text = rScore.ToString();
+			ShrinkPaddle(rightPaddle);
 			if (rScore >= maxScore){
 				Debug.Log("Right win!"); 
 				DisplayMessage("Right" + winMessage, instructionMessage);
@@ -102,6 +107,7 @@ public class GameManager : MonoBehaviour {
 	private void ResetGame(){
 		lScore = rScore = 0;
 		leftText.text = rightText.text = 0.ToString();
+		leftPaddle.transform.localScale = rightPaddle.transform.localScale = originalPaddleScale;
 		FreezePaddle(false);
 		if (UnityEngine.Random.insideUnitCircle.x < 0)
 			StartCoroutine(FindObjectOfType<BounceBall>().ResetBall(Vector3.left));
@@ -112,5 +118,13 @@ public class GameManager : MonoBehaviour {
 	private void FreezePaddle(bool freeze){
 		leftPaddle.GetComponent<MovePaddle>().haltInput = freeze;
 		rightPaddle.GetComponent<MovePaddle>().haltInput = freeze;
+	}
+
+	private void ShrinkPaddle(GameObject paddle){
+		Vector3 localScale = paddle.transform.localScale;
+		float yScale = localScale.y;
+		yScale -= yScale/(maxScore -1);
+		paddle.transform.localScale =
+			new Vector3(localScale.x, yScale, localScale.z);
 	}
 }
